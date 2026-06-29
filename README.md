@@ -1,1 +1,20 @@
 # teiknical
+
+- GitHub Codespaces Run Instructions
+	- make setup - installs necessary dependencies from requirements.txt
+	- make pipeline - initializes and loads the database.db, runs 'bobs_analysis.py', and saves the outputs to the outputs/ dir
+	- make dashboard - starts the server for the local dashboard on port 8080, displays bob's analysis from the db live
+- Database Schema Design
+	- The overall design of the database prioritizes querying for analysis while keeping intuition for where to find specific data. It is designed with additional projects in mind that may have different cell types or data in general measured per sample/subject.
+	- There are three tables that serve as the baseline datasets in the database - subjects, samples, and cell_counts. Both the subjects and samples tables serve as dimension tables, normalized to provide info unique to only the natural key (subject_id and sample_id respectively). A surrogate key is used in each case for joining and data integrity purposes, but the natural key is retained as well.
+	- The samples table has a foreign key related to the surrogate id in subjects, such that each single subject can have many samples (over time). Further, each sample's surrogate id is referenced as a foreign key in cell_counts, such that each observation in cell_counts belongs to a particular single sample. 
+	- The cell_counts table is stored in a long format, with the ability to add different cell types for future samples easily. It is also better optimized for many types of queries related to the analysis we would like to do. An index on 'cell_count.cell_type' is created to speed up queries related to specific cell types. For questions related to condition, time since treatment, and treatment type, indexes are added as well. Only the most relevant indexes would be created in a real world setting.
+	- The design allows future projects with different fact data tables to be created other than cell_counts. It also allows new data about particular subjects to be added easily, or new projects with new subjects to be added.
+	- For the current set of projects, I could imagine analyses similar to bob's including comparisons of cell count changes over time. magnitude of cell count as well as relative cellular abundance may also be interesting views of the data. With enough samples, statistical or machine learning models learning the cell_counts table may be able to predict response in a binary classification problem. There is also potential to group by condition and compare different treatments.
+- Code Design
+	- I tried to design this project as close to a real world system as possible while remaining within the constraints of the problem statements. The different Make commands modularized the loading, analysis, and dashboard components. I include a config for global variables like the database location, csv path, and port for the dashboard. I maintain a somewhat flat structure per the request to keep load_data.py in the root dir. 
+	- The analysis file is structured to have a function for each piece of analysis. This would allow the functions to work on a different database connection with the same schema. I also imagine each function as a 'cell' in a Jupyter notebook, where each output could be seen in real time and in-line (typically how I like to do exploratory analysis). The VIEWS section allows common views of the data to be built and run for specific analyses; I could imagine this being modularized further to build only relevant views in the future.
+	- Otherwise, the dashboard.py file shows the same as the output for the analysis file, with a live update if the database were actually active with new data being added.
+- Local Dashboard
+    - http://localhost:8080
+    - I didn't exactly make this 'interactive', but I could imagine drop down menus being added for different options allowing for filtering along different dimensions, corresponding to different cached views of the live database.
