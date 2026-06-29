@@ -5,6 +5,7 @@
 	- make pipeline - initializes and loads the database.db, runs 'bobs_analysis.py', and saves the outputs to the outputs/ dir
 	- make dashboard - starts the server for the local dashboard on port 8080, displays bob's analysis from the db live
 - Database Schema Design
+	- <img src="https://github.gatech.edu/pcondie3/teiknical_pcondie/blob/7342bac0f943f1b4e6a82be5d8c668ddd7305cc4/db_design.png" width="500">
 	- The overall design of the database prioritizes querying for analysis while keeping intuition for where to find specific data. It is designed with additional projects in mind that may have different cell types or data in general measured per sample/subject.
 	- There are three tables that serve as the baseline datasets in the database - subjects, samples, and cell_counts. Both the subjects and samples tables serve as dimension tables, normalized to provide info unique to only the natural key (subject_id and sample_id respectively). A surrogate key is used in each case for joining and data integrity purposes, but the natural key is retained as well.
 	- The samples table has a foreign key related to the surrogate id in subjects, such that each single subject can have many samples (over time). Further, each sample's surrogate id is referenced as a foreign key in cell_counts, such that each observation in cell_counts belongs to a particular single sample. 
