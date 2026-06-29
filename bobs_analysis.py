@@ -97,7 +97,7 @@ def plot_responder_comparison(df: pd.DataFrame, output_path: Path) -> None:
         y_bar = y_max * 1.08
         ax.plot([1, 2], [y_bar, y_bar], color="black", linewidth=1)
         label = f"* p={p:.3f}" if significant else f"ns p={p:.3f}"
-        ax.text(1.5, y_bar * 1.05, label, ha="center", va="bottom",
+        ax.text(1.5, y_bar * 1.02, label, ha="center", va="bottom",
                 fontsize=9, fontweight="bold" if significant else "normal",
                 color="black" if not significant else "red")
  
@@ -112,7 +112,7 @@ def plot_responder_comparison(df: pd.DataFrame, output_path: Path) -> None:
                frameon=False, fontsize=10, bbox_to_anchor=(0.5, -0.02))
  
     fig.suptitle("Miraclib — Melanoma: Cell type frequencies\nResponders vs Non-responders (PBMC)",
-                 fontsize=13, fontweight="bold", y=1.05)
+                 fontsize=13, fontweight="bold", y=1.02)
  
     plt.tight_layout()
     if isinstance(output_path, Path):
@@ -202,7 +202,6 @@ def avg_num_b_cells_melanoma_responder_males(con: sqlite3.Connection) -> int:
         JOIN samples sa  ON cc.sample_fk = sa.id
         JOIN subjects su ON sa.subject_fk = su.id
         WHERE su.condition   = 'melanoma'
-          AND su.treatment   = 'miraclib'
           AND su.response    = 1
           AND su.sex         = 'M'
           AND sa.time_from_treatment_start = 0
